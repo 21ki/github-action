@@ -68,7 +68,6 @@ jobs:
           name: sillyGirl
           path: /opt/images/
 
-jobs:
   release:
     name: Release on GitHub
     runs-on: ubuntu-latest
