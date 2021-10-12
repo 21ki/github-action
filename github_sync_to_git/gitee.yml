@@ -1,0 +1,29 @@
+name: 自动同步sync-gitee
+on:
+  #push
+  #推送时触发
+  #push:
+  # 定时任务触发
+  schedule:
+    # 每天北京时间9点跑
+    # Runs at 01:00 UTC (9:00 AM Beijing) every day
+    - cron:  '0 1 * * *'
+jobs:
+  run:
+    name: Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source codes
+        uses: actions/checkout@v1
+      - name: Mirror Github to Gitee with white list
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: github/21ki
+          dst: gitee/myki
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token:  ${{ secrets.GITEE_TOKEN }}
+          clone_style: "ssh"
+          white_list: "win,linux,vos,idinfo,router,gitlabci-templates,hotel,sprint-boot-healthz,Dockerfile,go,go-version"
+          static_list: 'win,linux,vos,idinfo,router,gitlabci-templates,hotel,sprint-boot-healthz,Dockerfile,go,go-version'
+          force_update: true
+          debug: true
