@@ -40,7 +40,8 @@ jobs:
         uses: actions/checkout@master
       - uses: actions/setup-go@v2
         with:
-          go-version: ${GOLANG_VERSION}
+          go-version: ${{ env.GOLANG_VERSION }}
+
           #go-version: '^1.17' # The Go version to download (if necessary) and use.
       - name: Initialization environment
         env:
