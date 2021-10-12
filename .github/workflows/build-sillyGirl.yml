@@ -3,7 +3,7 @@ name: Build sillyGirl
 
 # 环境变量设置
 env:
-  GO_VERSION: 1.17
+  GOLANG_VERSION: 1.17
 
 # 触发编译的条件
 on:
@@ -34,13 +34,13 @@ jobs:
     steps:
       - name: debug
         run: |
-          echo ${GO_VERSION}
+          echo ${GOLANG_VERSION}
 
       - name: Checkout
         uses: actions/checkout@master
       - uses: actions/setup-go@v2
         with:
-          go-version: "${GO_VERSION}"
+          go-version: ${GOLANG_VERSION}
           #go-version: '^1.17' # The Go version to download (if necessary) and use.
       - name: Initialization environment
         env:
