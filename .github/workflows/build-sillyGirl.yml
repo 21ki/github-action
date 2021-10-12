@@ -19,7 +19,7 @@ on:
     types: [started]
   #curl触发
   repository_dispatch:
-    types: jenkins_proxy
+    types: sillyGirl
 
 jobs:
   build:
