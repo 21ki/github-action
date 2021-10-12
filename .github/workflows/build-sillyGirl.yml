@@ -32,6 +32,10 @@ jobs:
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
+      - name: debug
+        run: |
+          echo ${GO_VERSION}
+
       - name: Checkout
         uses: actions/checkout@master
       - uses: actions/setup-go@v2
