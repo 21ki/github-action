@@ -1,0 +1,46 @@
+
+
+name: 通用构建
+
+on:
+  repository_dispatch:
+    types: rebuild
+env:
+  REGISTRY: "registry.cn-beijing.aliyuncs.com"
+  NAMESPACE: "myki"
+  APPLICATION: ${{ github.event.client_payload.application }}
+  APPLICATION_VERSION: ${{ github.event.client_payload.version }}
+
+
+jobs:
+  build:
+    name: APPLICATION
+    runs-on: ubuntu-latest
+    steps:
+      - name: "复制文件"
+        uses: actions/checkout@v1
+      - name: 设置变量
+        env:
+          APPLICATION_VERSION: v1.5.0
+        #run: echo "::set-env name=packageName::v1.18.2"
+        #run: echo '${{ env.packageName }}'
+        run: echo "APPLICATION_VERSION=${{ env.APPLICATION_VERSION }}" >> $GITHUB_ENV
+      - name: "列出文件"
+        run: ls
+      - name: "容器构建"
+        run: |
+          docker build --target aliyun --build-arg APPLICATION_VERSION=${APPLICATION_VERSION} -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.APPLICATION }}:${{ env.APPLICATION_VERSION}} --file ./${{ env.APPLICATION }}/Dockerfile .
+      - name: "容器推送"
+        run: |
+          docker login --username=${{ secrets.ALIYUN_DOCKER_NAME }} $REGISTRY --password=${{ secrets.ALIYUN_DOCKER_PASS }}
+          docker push $REGISTRY/$NAMESPACE/$APPLICATION:$APPLICATION_VERSION
+      - name: "构建失败 - 通知远浅排查问题"
+        if: failure()
+        run: curl -X POST --data "text=$APPLICATION 构建失败" "https://tgbot.myki.workers.dev"
+      - name: "构建成功 - 通知远浅让他开心"
+        if: success()
+        run: curl -X POST --data "text=$APPLICATION 构建成功" "https://tgbot.myki.workers.dev"
+#       run: curl -H "Content-Type:application/json" -X POST 集群更服务
+#      - name: "构建成功 - 通知服务集群更新服务"
+#        if: success()
+#        run: curl -X POST ${{ secrets.DOCKER_HOOK }}
