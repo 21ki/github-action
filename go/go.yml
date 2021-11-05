@@ -1,0 +1,76 @@
+name: Build static binary
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Dump GitHub context
+        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF:10} >> $GITHUB_ENV
+
+      - name: Get Env
+        run: echo '${{ env.RELEASE_VERSION }}'
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.RELEASE_VERSION }}
+
+      - name: Sed Env
+        run: |
+          sed -i "s/365/365 * 99/" /home/runner/work/kubernetes/kubernetes/cmd/kubeadm/app/constants/constants.go
+          sed -i "s/10)/99)/"  /home/runner/work/kubernetes/kubernetes/staging/src/k8s.io/client-go/util/cert/cert.go
+      - name: Get Env
+        run: |
+          find . -name constants.go |xargs cat |grep 365
+          find . -name cert.go |xargs cat |grep 365d
+      #- name: github
+      #  run: git clone --branch v1.18.2 https://github.com/kubernetes/kubernetes.git
+
+      #      - name: Get dependencies
+      #        run: |
+      #          go get -v -t -d ./...
+      #          if [ -f Gopkg.toml ]; then
+      #              curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+      #              dep ensure
+      #          fi
+      - name: Get workpath
+        run: pwd
+
+      #- name: 切换分支
+      #  run: git checkout v1.18.2
+
+      - name: Build
+        run: KUBE_GIT_TREE_STATE=clean make all WHAT=cmd/kubeadm GOFLAGS=-v
+
+      - name: Get paGth
+        run: find . -name kubeadm
+
+      - name: Kubeadm version
+        run: |
+          chmod +x ./_output/local/bin/linux/amd64/kubeadm
+          ./_output/local/bin/linux/amd64/kubeadm version
+
+      - name: Package
+        run: mkdir myki && cp ./_output/local/bin/linux/amd64/kubeadm myki
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: kubeadm-${{ env.RELEASE_VERSION }}
+          path: myki
+
+#     #- name: Copy file
+#     #  run: mkdir staging && cp _output/local/bin/linux/amd64/kubeadm staging
+#     #- name: Test
+#       #run: go test -v .
