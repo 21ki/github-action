@@ -1,0 +1,38 @@
+#https://www.coder.work/article/6512772
+#gitHub中自动同步fork
+name: Merge upstream branches
+on:
+  #推送的时候跑
+  push:
+  watch:
+    types: started
+  schedule:
+    # 每天北京时间9点跑
+    # Runs at 01:00 UTC (9:00 AM Beijing) every day
+    - cron:  '0 1 * * *'
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: 设置变量
+        env:
+          UPSTREAM_URL: https://github.com/1nth/fork-sync.git
+        #此用法不建议使用
+        #run: echo "::set-env name=packageName::v1.18.2"
+        #run: echo '${{ env.packageName }}'
+        run: echo "UPSTREAM_URL=${{ env.UPSTREAM_URL }}" >> $GITHUB_ENV
+      - name: Merge upstream
+        run: |
+          git config --global user.name '21ki'
+          git config --global user.email '21kixc@gmail.com'
+          git pull --unshallow
+          git remote add upstream ${UPSTREAM_URL}
+          git fetch upstream
+          git checkout --progress --force -B main refs/remotes/origin/main
+          git merge --no-edit upstream/main
+          git push origin main -f
+          #sync tag
+          git fetch upstream --tags
+          git push --tags -f
+          # etc
