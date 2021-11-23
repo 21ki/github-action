@@ -42,3 +42,19 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
       ...
+
+## if demo3 if通知
+    # Notify to slack when test failed
+    - name: Slack test failure notification
+      if: failure()
+      run: |
+        curl -X POST --data-urlencode 'payload={
+          "text": ":fire::fire::fire:${{github.repository}}: Test failed..:fire::fire::fire:"
+        }' ${{secrets.SLACK_WEBHOOK_URL}}
+    # Notify to slack when build and test succeeded
+    - name: Slack success notification
+      if: success()
+      run: |
+        curl -X POST --data-urlencode 'payload={
+          "text": ":tada::tada::tada:${{github.repository}}: Build and Test succeeded！:tada::tada::tada:"
+        }' ${{secrets.SLACK_WEBHOOK_URL}}
