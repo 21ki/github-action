@@ -1,4 +1,5 @@
 #https://stackoverflow.com/questions/60942067/get-current-date-and-time-in-github-workflows
+#https://docs.github.com/cn/actions/learn-github-actions/workflow-commands-for-github-actions
 on: [push, pull_request]
 name: build
 jobs:
