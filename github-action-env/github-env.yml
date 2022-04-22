@@ -1,0 +1,3 @@
+# github env https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+# webhook https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#push
+${{ github.ref_name }}
