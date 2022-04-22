@@ -67,6 +67,23 @@ jobs:
           echo '${{ env.ACTOR }}'
 
 
+env:
+  DOCKER_REGISTRY_URL: "docker.io"
+  NAMESPACE: "cheche"
+
+jobs:
+  github:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to github registry
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_REGISTRY_URL: ${{ env.DOCKER_REGISTRY_URL }}
+
 
 #echo ::set-env name=IMAGE_TAG::${IMAGE_TAG}
 
